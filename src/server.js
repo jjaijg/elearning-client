@@ -4,6 +4,8 @@ import { StaticRouter } from "react-router-dom";
 import express from "express";
 import { renderToString } from "react-dom/server";
 import { Helmet } from "react-helmet";
+import compression from "compression";
+import expressStaticGzip from "express-static-gzip";
 
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
 
@@ -60,9 +62,16 @@ export const renderApp = (req, res) => {
 };
 
 const server = express();
+// .use(express.static(process.env.RAZZLE_PUBLIC_DIR))
 server
   .disable("x-powered-by")
-  .use(express.static(process.env.RAZZLE_PUBLIC_DIR))
+  .use(compression())
+  .use(
+    expressStaticGzip(process.env.RAZZLE_PUBLIC_DIR, {
+      enableBrotli: true,
+      orderPreference: ["br", "gz"],
+    })
+  )
   .get("/*", (req, res) => {
     const { context, html } = renderApp(req, res);
     if (context.url) {
