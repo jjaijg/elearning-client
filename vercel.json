@@ -1,6 +1,6 @@
 {
   "name": "elearning-client",
-  "version": "0.0.1",
+  "version": 2,
   "builds": [
     {
       "src": "build/public/**",
