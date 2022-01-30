@@ -173,12 +173,10 @@ const PaperBoard = ({
                 className="nav-item"
                 onClick={() => setActiveTab("add-paper")}
               >
-                <button
-                  className={`btn ${
-                    activeTab === "add-paper"
-                      ? "btn-primary"
-                      : "btn-outline-primary"
-                  }`}
+                <span
+                  className={`${
+                    activeTab === "add-paper" ? "active" : ""
+                  } nav-link`}
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#add-paper"
@@ -186,18 +184,16 @@ const PaperBoard = ({
                   aria-controls="add-paper"
                 >
                   Add Paper
-                </button>
+                </span>
               </li>
               <li
                 className="nav-item"
                 onClick={() => setActiveTab("upload-file")}
               >
-                <button
-                  className={`btn ${
-                    activeTab === "upload-file"
-                      ? "btn-primary"
-                      : "btn-outline-primary"
-                  }`}
+                <span
+                  className={`${
+                    activeTab === "upload-file" ? "active" : ""
+                  } nav-link`}
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#upload-file"
@@ -205,7 +201,7 @@ const PaperBoard = ({
                   aria-controls="upload-file"
                 >
                   Upload File
-                </button>
+                </span>
               </li>
             </ul>
             <div className="tab-content">

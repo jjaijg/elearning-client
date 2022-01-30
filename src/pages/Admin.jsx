@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import SemesterBoard from "../components/SemesterBoard";
 import PaperBoard from "../components/PaperBoard";
 
-const Admin = ({ adminOption = "semesters" }) => {
+const Admin = ({ adminOption, setAdminOption }) => {
   const [departments, setDepartments] = useState([]);
   const [semesters, setSemesters] = useState([]);
   const [papers, setPapers] = useState([]);
@@ -65,6 +65,33 @@ const Admin = ({ adminOption = "semesters" }) => {
 
   return (
     <div className="container">
+      <ul className="nav nav-tabs">
+        <li className="nav-item" onClick={() => setAdminOption("departments")}>
+          <span
+            className={`${
+              adminOption === "departments" ? "active" : ""
+            } nav-link`}
+          >
+            Departments
+          </span>
+        </li>
+        <li className="nav-item" onClick={() => setAdminOption("semesters")}>
+          <span
+            className={`${
+              adminOption === "semesters" ? "active" : ""
+            } nav-link`}
+          >
+            Semesters
+          </span>
+        </li>
+        <li className="nav-item" onClick={() => setAdminOption("papers")}>
+          <span
+            className={`${adminOption === "papers" ? "active" : ""} nav-link`}
+          >
+            Papers
+          </span>
+        </li>
+      </ul>
       <div className="row">
         <div className="col-12">
           {adminOption === "departments" && (

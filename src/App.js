@@ -20,7 +20,13 @@ const App = () => {
           <Route
             exact={true}
             path="/admin/dashboard"
-            render={(props) => <Admin adminOption={adminOption} {...props} />}
+            render={(props) => (
+              <Admin
+                adminOption={adminOption}
+                setAdminOption={setAdminOption}
+                {...props}
+              />
+            )}
           />
         </Switch>
       </main>
