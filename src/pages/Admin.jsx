@@ -71,6 +71,7 @@ const Admin = ({ adminOption, setAdminOption }) => {
             className={`${
               adminOption === "departments" ? "active" : ""
             } nav-link`}
+            type="button"
           >
             Departments
           </span>
@@ -80,6 +81,7 @@ const Admin = ({ adminOption, setAdminOption }) => {
             className={`${
               adminOption === "semesters" ? "active" : ""
             } nav-link`}
+            type="button"
           >
             Semesters
           </span>
@@ -87,6 +89,7 @@ const Admin = ({ adminOption, setAdminOption }) => {
         <li className="nav-item" onClick={() => setAdminOption("papers")}>
           <span
             className={`${adminOption === "papers" ? "active" : ""} nav-link`}
+            type="button"
           >
             Papers
           </span>

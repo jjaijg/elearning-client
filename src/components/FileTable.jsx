@@ -38,60 +38,62 @@ const FileTable = ({ papers, selectedDept, selectedSem, downloadFile }) => {
               />
             </div>
             <div className="col-12 my-3">
-              <table className="table table-striped table-hover">
-                <thead>
-                  <tr>
-                    <th scope="col">Document</th>
-                    <th scope="col">Paper</th>
-                    <th scope="col">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPapers?.length ? (
-                    filteredPapers.map((paper) =>
-                      paper.files
-                        .filter((file) =>
-                          filterOptions.fileType
-                            ? file.fileType === filterOptions.fileType
-                            : file.fileType
-                        )
-                        .map((file) => (
-                          <tr key={file.fileName}>
-                            <td>
-                              <div className="d-flex flex-row align-items-center">
-                                <div style={{ width: "26px" }}>
-                                  <FileIcon
-                                    extension={file.fileType}
-                                    {...defaultStyles[file.fileType]}
-                                  />
-                                </div>
-
-                                <span className="px-1">{file.fileName}</span>
-                              </div>
-                            </td>
-                            <td>{paper.name}</td>
-                            {/* <td>{selectedSem.name}</td> */}
-                            {/* <td>{selectedDept.name}</td> */}
-                            <td>
-                              <button
-                                className="btn btn-success"
-                                onClick={() => downloadFile(file)}
-                              >
-                                Download
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                    )
-                  ) : (
-                    <tr className="bg-info">
-                      <td colSpan={5} className="text-center">
-                        No Data found
-                      </td>
+              <div className="table-responsive">
+                <table className="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Document</th>
+                      <th scope="col">Paper</th>
+                      <th scope="col">Action</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredPapers?.length ? (
+                      filteredPapers.map((paper) =>
+                        paper.files
+                          .filter((file) =>
+                            filterOptions.fileType
+                              ? file.fileType === filterOptions.fileType
+                              : file.fileType
+                          )
+                          .map((file) => (
+                            <tr key={file.fileName}>
+                              <td>
+                                <div className="d-flex flex-row align-items-center">
+                                  <div style={{ width: "26px" }}>
+                                    <FileIcon
+                                      extension={file.fileType}
+                                      {...defaultStyles[file.fileType]}
+                                    />
+                                  </div>
+
+                                  <span className="px-1">{file.fileName}</span>
+                                </div>
+                              </td>
+                              <td>{paper.name}</td>
+                              {/* <td>{selectedSem.name}</td> */}
+                              {/* <td>{selectedDept.name}</td> */}
+                              <td>
+                                <button
+                                  className="btn btn-success"
+                                  onClick={() => downloadFile(file)}
+                                >
+                                  Download
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                      )
+                    ) : (
+                      <tr className="bg-info">
+                        <td colSpan={5} className="text-center">
+                          No Data found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
