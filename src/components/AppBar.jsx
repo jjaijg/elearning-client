@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const AppBar = ({}) => {
+const AppBar = ({ user, logout }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-1">
       <a className="navbar-brand" href="#">
@@ -32,6 +32,21 @@ const AppBar = ({}) => {
               Dashboard
             </Link>
           </li>
+          {!user ? (
+            <li className="nav-item">
+              <Link className="nav-link" to={"/login"}>
+                Login
+              </Link>
+            </li>
+          ) : (
+            <li
+              className="nav-item"
+              style={{ cursor: "pointer" }}
+              onClick={logout}
+            >
+              <span className="nav-link">Logout</span>
+            </li>
+          )}
         </ul>
       </div>
     </nav>

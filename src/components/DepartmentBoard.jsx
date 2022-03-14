@@ -1,27 +1,27 @@
-import axios from "axios";
 import React, { useState, useRef } from "react";
 import { toast } from "react-toastify";
 import Skeleton from "react-loading-skeleton";
 
 import DepartmentModal from "./DepartmentModal";
+import departmentService from "../services/department.service";
 
 const DepartmentBoard = ({ departments, loading, setProcessed }) => {
   const [selectedDept, setSelectedDept] = useState(null);
 
   const deptRef = useRef(null);
 
-  const onAdd = () => {
+  const onAdd = async () => {
     if (!deptRef.current.value) return;
-    console.log(deptRef.current.value);
+    // console.log(deptRef.current.value);
     const newDeptName = deptRef.current.value;
-    axios
-      .post(`${process.env.RAZZLE_API_URL}/departments`, {
-        name: newDeptName,
-      })
-      .then((res) => {
-        setProcessed(true);
-        toast.success(`${res.data.name} added successfully!`);
-      });
+    try {
+      const dept = await departmentService.addDept(newDeptName);
+      setProcessed(true);
+      toast.success(`${dept.name} added successfully!`);
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
+    }
   };
 
   const onEdit = (dept) => {
@@ -29,27 +29,29 @@ const DepartmentBoard = ({ departments, loading, setProcessed }) => {
     console.log(dept);
   };
 
-  const onUpdate = (updatedDept) => {
+  const onUpdate = async (updatedDept) => {
     const { id, name } = updatedDept;
-    axios
-      .put(`${process.env.RAZZLE_API_URL}/departments/${id}`, {
-        name,
-      })
-      .then(() => {
-        setProcessed(true);
-        toast.success(`updated successfully!`);
-      });
+    try {
+      await departmentService.updDept(id, name);
+      setProcessed(true);
+      toast.success(`updated successfully!`);
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
+    }
   };
 
-  const onDelete = (deptId) => {
+  const onDelete = async (deptId) => {
     const canDel = window.confirm("Are you sure?");
-    if (canDel) {
-      axios
-        .delete(`${process.env.RAZZLE_API_URL}/departments/${deptId}`)
-        .then((res) => {
-          setProcessed(true);
-          toast.success(res.data.message);
-        });
+    try {
+      if (canDel) {
+        const res = await departmentService.delDept(deptId);
+        setProcessed(true);
+        toast.success(res.message);
+      }
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
     }
   };
 

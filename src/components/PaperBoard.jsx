@@ -1,12 +1,20 @@
-import axios from "axios";
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import Skeleton from "react-loading-skeleton";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import { FileUploader } from "react-drag-drop-files";
+// import { getCssId } from "css-unique-id";
+import uniqid from "uniqid";
 
 import PaperModal from "./PaperModal";
+import paperService from "../services/paper.service";
 
+const MAX_SIZE = process.env.RAZZLE_MAX_FILE_SIZE_IN_MB || 100;
+const TYPES = process.env.RAZZLE_SUPPORTED_TYPES
+  ? process.env.RAZZLE_SUPPORTED_TYPES.split(",")
+  : [];
+
+console.log("file type : ", process.env.RAZZLE_SUPPORTED_TYPES);
 const PaperBoard = ({
   papers,
   departments,
@@ -41,25 +49,22 @@ const PaperBoard = ({
     else setAddForm({ ...addForm, [name]: value });
   };
 
-  const onAdd = () => {
+  const onAdd = async () => {
     if (!addForm.add_dept || !addForm.add_sem || !addForm.add_name) return;
 
-    const newPap = {
-      name: addForm.add_name,
-      department: addForm.add_dept,
-      semester: addForm.add_sem,
-    };
-    axios
-      .post(`${process.env.RAZZLE_API_URL}/papers`, newPap)
-      .then((res) => {
-        console.log("res : ", res);
-        setProcessed(true);
-        toast.success(`${res.data.name} added successfully!`);
-      })
-      .catch((err) => {
-        console.log("err : ", err);
-        toast.error(err.response?.data.message || err.statusText);
-      });
+    try {
+      const newPap = {
+        name: addForm.add_name,
+        department: addForm.add_dept,
+        semester: addForm.add_sem,
+      };
+      const paper = await paperService.addPaper(newPap);
+      setProcessed(true);
+      toast.success(`${paper.name} added successfully!`);
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
+    }
   };
 
   const onEdit = (pap) => {
@@ -67,33 +72,29 @@ const PaperBoard = ({
     console.log(pap);
   };
 
-  const onUpdate = (updatedPap) => {
-    const { id, name } = updatedPap;
-    axios
-      .put(`${process.env.RAZZLE_API_URL}/papers/${id}`, {
-        name,
-      })
-      .then(() => {
-        setProcessed(true);
-        toast.success(`updated successfully!`);
-      })
-      .catch((err) =>
-        toast.error(err.response?.data.message || err.statusText)
-      );
+  const onUpdate = async (updatedPap) => {
+    try {
+      const { id, name } = updatedPap;
+      await paperService.updPaper(id, name);
+      setProcessed(true);
+      toast.success(`updated successfully!`);
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
+    }
   };
 
-  const onDelete = (papId) => {
+  const onDelete = async (papId) => {
     const canDel = window.confirm("Are you sure?");
-    if (canDel) {
-      axios
-        .delete(`${process.env.RAZZLE_API_URL}/papers/${papId}`)
-        .then((res) => {
-          setProcessed(true);
-          toast.success(res.data.message);
-        })
-        .catch((err) =>
-          toast.error(err.response?.data.message || err.statusText)
-        );
+    try {
+      if (canDel) {
+        const res = await paperService.delPaper(papId);
+        setProcessed(true);
+        toast.success(res.message);
+      }
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
     }
   };
 
@@ -110,43 +111,41 @@ const PaperBoard = ({
     setUploadForm({ ...uploadForm, upl_file: file });
   };
 
-  const onUpload = () => {
-    if (canFileUpload) return;
-
-    const formData = new FormData();
-    formData.append("file", uploadForm.upl_file);
-
-    axios
-      .put(
-        `${process.env.RAZZLE_API_URL}/papers/${uploadForm.upl_pap}/upload`,
-        formData
-      )
-      .then((res) => {
-        console.log("res : ", res);
-        setProcessed(true);
-        setUploadForm({ ...uploadForm, upl_file: null });
-        toast.success(`${res.data.message}`);
-      })
-      .catch((err) => {
-        console.log("err : ", err);
-        toast.error(err.response?.data.message || err.statusText);
-      });
+  const handleFileTypeError = (err) => {
+    setUploadForm({ ...uploadForm, upl_file: null });
+    toast.error(`${err} - File type should be ${TYPES.join("/")}`);
+  };
+  const handleFileSizeError = (err) => {
+    setUploadForm({ ...uploadForm, upl_file: null });
+    toast.error(`${err} - should be less than ${MAX_SIZE} mb`);
   };
 
-  const onFileDelete = (papId, file) => {
+  const onUpload = async () => {
+    if (canFileUpload) return;
+    try {
+      const res = await paperService.uplFile(
+        uploadForm.upl_pap,
+        uploadForm.upl_file
+      );
+      setProcessed(true);
+      setUploadForm({ ...uploadForm, upl_file: null });
+      toast.success(`${res.message}`);
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
+    }
+  };
+
+  const onFileDelete = async (papId, file) => {
     const canDel = window.confirm("Are you sure?");
-    if (canDel) {
-      axios
-        .delete(
-          `${process.env.RAZZLE_API_URL}/papers/${papId}/del-file?fileName=${file.fileName}&fileDest=${file.fileDest}`
-        )
-        .then((res) => {
-          setProcessed(true);
-          toast.success(res.data.message);
-        })
-        .catch((err) =>
-          toast.error(err.response?.data.message || err.statusText)
-        );
+    try {
+      if (canDel) {
+        const res = await paperService.delFile(papId, file);
+        setProcessed(true);
+        toast.success(res.data.message);
+      }
+    } catch (err) {
+      toast.error(err.response?.data.message || err.statusText);
     }
   };
 
@@ -354,8 +353,13 @@ const PaperBoard = ({
                     <div className="my-3">
                       <FileUploader
                         handleChange={getFile}
+                        onSelect={getFile}
+                        onDrop={getFile}
+                        onTypeError={handleFileTypeError}
+                        onSizeError={handleFileSizeError}
                         name="file"
-                        // types={fileTypes}
+                        types={TYPES}
+                        maxSize={MAX_SIZE}
                         fileOrFiles={uploadForm.upl_file}
                       />
                     </div>
@@ -389,91 +393,97 @@ const PaperBoard = ({
                 </tr>
               </thead>
               <tbody>
-                {papers.map((pap, ind) => (
-                  <React.Fragment key={pap._id}>
-                    <tr>
-                      <td scope="col">{ind + 1}</td>
-                      <td scope="col">{pap.name}</td>
-                      <td scope="col">{pap.semester.name}</td>
-                      <td scope="col">{pap.semester.department.name}</td>
-                      <td scope="col">{pap.files.length}</td>
-                      <td scope="col">
-                        <div className="d-flex flex-row space-around">
-                          <button
-                            className="btn btn-outline-primary btn-sm mx-2"
-                            role={"button"}
-                            data-bs-toggle="collapse"
-                            data-bs-target={`#${pap.name}`}
-                            aria-expanded="false"
-                            aria-controls={`${pap.name}`}
-                          >
-                            <i className="bi bi-toggles"></i>
-                          </button>
-                          <button
-                            data-bs-toggle="modal"
-                            data-bs-target="#paperModal"
-                            className="btn btn-outline-info btn-sm mx-2"
-                            role={"button"}
-                            onClick={() => onEdit(pap)}
-                          >
-                            <i className="bi bi-pen"></i>
-                          </button>
-                          <button
-                            className="btn btn-outline-danger btn-sm mx-2"
-                            role={"button"}
-                            onClick={() => onDelete(pap._id)}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="collapse m-2" id={`${pap.name}`}>
-                      <td scope="col" colSpan={"6"}>
-                        <table className="table table-info table-stripped table-hover">
-                          <thead>
-                            <tr>
-                              <th scope="col">Document</th>
-                              <th scope="col">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {pap.files.map((file) => (
-                              <tr key={`${pap.name}-${file.fileName}}`}>
-                                <td>
-                                  <div className="d-flex flex-row align-items-center">
-                                    <div style={{ width: "26px" }}>
-                                      <FileIcon
-                                        extension={file.fileType}
-                                        {...defaultStyles[file.fileType]}
-                                      />
-                                    </div>
+                {papers.map((pap, ind) => {
+                  const cssId = uniqid("e-", "-learning");
 
-                                    <span className="px-1">
-                                      {file.fileName}
-                                    </span>
-                                  </div>
-                                </td>
-                                {/* <td>{paper.name}</td> */}
-                                {/* <td>{selectedPap.name}</td> */}
-                                {/* <td>{selectedDept.name}</td> */}
-                                <td>
-                                  <button
-                                    className="btn btn-outline-danger btn-sm mx-2"
-                                    role={"button"}
-                                    onClick={() => onFileDelete(pap._id, file)}
-                                  >
-                                    <i className="bi bi-trash"></i>
-                                  </button>
-                                </td>
+                  return (
+                    <React.Fragment key={pap._id}>
+                      <tr>
+                        <td scope="col">{ind + 1}</td>
+                        <td scope="col">{pap.name}</td>
+                        <td scope="col">{pap.semester.name}</td>
+                        <td scope="col">{pap.semester.department.name}</td>
+                        <td scope="col">{pap.files.length}</td>
+                        <td scope="col">
+                          <div className="d-flex flex-row space-around">
+                            <button
+                              className="btn btn-outline-primary btn-sm mx-2"
+                              role={"button"}
+                              data-bs-toggle="collapse"
+                              data-bs-target={`#${cssId}`}
+                              aria-expanded="false"
+                              aria-controls={`${cssId}`}
+                            >
+                              <i className="bi bi-toggles"></i>
+                            </button>
+                            <button
+                              data-bs-toggle="modal"
+                              data-bs-target="#paperModal"
+                              className="btn btn-outline-info btn-sm mx-2"
+                              role={"button"}
+                              onClick={() => onEdit(pap)}
+                            >
+                              <i className="bi bi-pen"></i>
+                            </button>
+                            <button
+                              className="btn btn-outline-danger btn-sm mx-2"
+                              role={"button"}
+                              onClick={() => onDelete(pap._id)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr className="collapse m-2" id={`${cssId}`}>
+                        <td scope="col" colSpan={"6"}>
+                          <table className="table table-info table-stripped table-hover">
+                            <thead>
+                              <tr>
+                                <th scope="col">Document</th>
+                                <th scope="col">Action</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </React.Fragment>
-                ))}
+                            </thead>
+                            <tbody>
+                              {pap.files.map((file) => (
+                                <tr key={`${pap.name}-${file.fileName}}`}>
+                                  <td>
+                                    <div className="d-flex flex-row align-items-center">
+                                      <div style={{ width: "26px" }}>
+                                        <FileIcon
+                                          extension={file.fileType}
+                                          {...defaultStyles[file.fileType]}
+                                        />
+                                      </div>
+
+                                      <span className="px-1">
+                                        {file.fileName}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  {/* <td>{paper.name}</td> */}
+                                  {/* <td>{selectedPap.name}</td> */}
+                                  {/* <td>{selectedDept.name}</td> */}
+                                  <td>
+                                    <button
+                                      className="btn btn-outline-danger btn-sm mx-2"
+                                      role={"button"}
+                                      onClick={() =>
+                                        onFileDelete(pap._id, file)
+                                      }
+                                    >
+                                      <i className="bi bi-trash"></i>
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
             {loading && <Skeleton count={10} />}

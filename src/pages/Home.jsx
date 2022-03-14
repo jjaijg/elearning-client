@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
+import { toast, ToastContainer } from "react-toastify";
 
-const FileSaver = require("file-saver");
-import axios from "axios";
+import FileSaver from "file-saver";
 import FileTable from "../components/FileTable";
+import departmentService from "../services/department.service";
+import semesterService from "../services/semester.service";
+import paperService from "../services/paper.service";
 
 const Home = () => {
   const [departments, setDepartments] = useState([]);
@@ -17,23 +20,37 @@ const Home = () => {
   // const [paperLoading, setPaperLoading] = useState(false);
 
   useEffect(() => {
-    setDeptLoading(true);
-    axios.get(`${process.env.RAZZLE_API_URL}/departments`).then((response) => {
-      console.log(response);
-      setDepartments(response.data);
-      setDeptLoading(false);
-    });
+    const getDept = async () => {
+      try {
+        setDeptLoading(true);
+        const depts = await departmentService.getDept();
+        setDepartments(depts);
+        setDeptLoading(false);
+      } catch (err) {
+        setDeptLoading(false);
+        console.log("err : ", err);
+        toast.error(err.response?.data.message || err.statusText);
+      }
+    };
+    console.log("Getting departments in home page...");
+    getDept();
   }, []);
 
   useEffect(() => {
+    const getSem = async () => {
+      try {
+        setSemLoading(true);
+        const sems = await semesterService.getSemByDept(selectedDept.id);
+        setSemesters(sems);
+        setSemLoading(false);
+      } catch (err) {
+        setSemLoading(false);
+        console.log("err : ", err);
+        toast.error(err.response?.data.message || err.statusText);
+      }
+    };
     if (selectedDept) {
-      setSemLoading(true);
-      axios
-        .get(`${process.env.RAZZLE_API_URL}/semesters/dept/${selectedDept.id}`)
-        .then((response) => {
-          setSemesters(response.data);
-          setSemLoading(false);
-        });
+      getSem(selectedDept.id);
     } else {
       setSelectedSem(null);
     }
@@ -70,18 +87,17 @@ const Home = () => {
     });
   };
 
-  const downloadFile = (file) => {
-    axios
-      .post(file.fileUrl, {
-        path: file.fileDest,
-        mime: file.fileMime,
-      })
-      .then((res) => {
-        var blob = new Blob([res.data], {
-          type: file.fileMime,
-        });
-        FileSaver.saveAs(blob, file.fileName);
+  const downloadFile = async (file) => {
+    try {
+      const dwnfile = await paperService.dwnFile(file);
+      const blob = new Blob([dwnfile], {
+        type: file.fileMime,
       });
+      FileSaver.saveAs(blob, file.fileName);
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
+    }
   };
 
   return (
@@ -153,6 +169,7 @@ const Home = () => {
           selectedSem={selectedSem}
         />
       )}
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };

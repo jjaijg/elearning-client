@@ -1,9 +1,9 @@
-import axios from "axios";
 import React, { useState, useRef } from "react";
 import { toast } from "react-toastify";
 import Skeleton from "react-loading-skeleton";
 
 import SemesterModal from "./SemesterModal";
+import semesterService from "../services/semester.service";
 
 const SemesterBoard = ({ departments, semesters, loading, setProcessed }) => {
   const [selectedSem, setSelectedSem] = useState(null);
@@ -11,24 +11,21 @@ const SemesterBoard = ({ departments, semesters, loading, setProcessed }) => {
   const semRef = useRef(null);
   const deptRef = useRef(null);
 
-  const onAdd = () => {
+  const onAdd = async () => {
     if (!semRef.current.value || !deptRef.current.value) return;
     // console.log(deptRef.current.value);
-    const newSem = {
-      name: semRef.current.value,
-      department: deptRef.current.value,
-    };
-    axios
-      .post(`${process.env.RAZZLE_API_URL}/semesters`, newSem)
-      .then((res) => {
-        console.log("res : ", res);
-        setProcessed(true);
-        toast.success(`${res.data.name} added successfully!`);
-      })
-      .catch((err) => {
-        console.log("err : ", err);
-        toast.error(err.response?.data.message || err.statusText);
-      });
+    try {
+      const newSem = {
+        name: semRef.current.value,
+        department: deptRef.current.value,
+      };
+      const sem = await semesterService.addSem(newSem);
+      setProcessed(true);
+      toast.success(`${sem.name} added successfully!`);
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
+    }
   };
 
   const onEdit = (sem) => {
@@ -36,34 +33,29 @@ const SemesterBoard = ({ departments, semesters, loading, setProcessed }) => {
     console.log(sem);
   };
 
-  const onUpdate = (updatedSem) => {
+  const onUpdate = async (updatedSem) => {
     const { id, name, department } = updatedSem;
-    axios
-      .put(`${process.env.RAZZLE_API_URL}/semesters/${id}`, {
-        name,
-        department,
-      })
-      .then(() => {
-        setProcessed(true);
-        toast.success(`updated successfully!`);
-      })
-      .catch((err) =>
-        toast.error(err.response?.data.message || err.statusText)
-      );
+    try {
+      await semesterService.updSem(id, name);
+      setProcessed(true);
+      toast.success(`updated successfully!`);
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
+    }
   };
 
-  const onDelete = (semId) => {
+  const onDelete = async (semId) => {
     const canDel = window.confirm("Are you sure?");
-    if (canDel) {
-      axios
-        .delete(`${process.env.RAZZLE_API_URL}/semesters/${semId}`)
-        .then((res) => {
-          setProcessed(true);
-          toast.success(res.data.message);
-        })
-        .catch((err) =>
-          toast.error(err.response?.data.message || err.statusText)
-        );
+    try {
+      if (canDel) {
+        const res = await semesterService.delSem(semId);
+        setProcessed(true);
+        toast.success(res.message);
+      }
+    } catch (err) {
+      console.log("err : ", err);
+      toast.error(err.response?.data.message || err.statusText);
     }
   };
 

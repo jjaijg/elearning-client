@@ -62,7 +62,7 @@ export const renderApp = (req, res) => {
 };
 
 const server = express();
-// .use(express.static(process.env.RAZZLE_PUBLIC_DIR))
+// .use(express.static(process.env.RAZZLE_PUBLIC_DIR));
 server
   .disable("x-powered-by")
   .use(compression())
