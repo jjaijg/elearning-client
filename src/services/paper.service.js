@@ -82,20 +82,17 @@ class PaperService {
   }
   dwnFile(file) {
     console.log(file.fileDest);
-    return axios
-      .post(
-        `${file.fileUrl}`,
-        {
-          path: file.fileDest,
-          mime: file.fileMime,
-        },
-        {
-          headers: { ...getAuthHeader() },
-        }
-      )
-      .then((response) => {
-        return response.data;
-      });
+    return axios({
+      method: "POST",
+      url: `${file.fileUrl}`,
+      data: {
+        path: file.fileDest,
+        mime: file.fileMime,
+      },
+      responseType: "arraybuffer",
+    }).then((response) => {
+      return response;
+    });
   }
 }
 

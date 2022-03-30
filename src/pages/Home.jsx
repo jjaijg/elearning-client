@@ -87,11 +87,22 @@ const Home = () => {
     });
   };
 
+  // const saveFile = async (blob, name) => {
+  //   const a = document.createElement("a");
+  //   a.setAttribute("download", name);
+  //   a.href = URL.createObjectURL(blob);
+  //   console.log(a);
+  //   // a.addEventListener("click", (e) => {
+  //   //   setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
+  //   // });
+  //   a.click();
+  // };
+
   const downloadFile = async (file) => {
     try {
-      const dwnfile = await paperService.dwnFile(file);
-      const blob = new Blob([dwnfile], {
-        type: file.fileMime,
+      const res = await paperService.dwnFile(file);
+      const blob = new Blob([res.data], {
+        type: res.headers["content-type"],
       });
       FileSaver.saveAs(blob, file.fileName);
     } catch (err) {
