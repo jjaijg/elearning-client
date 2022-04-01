@@ -3,6 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import "jquery";
 import "popper.js";
 import "react-loading-skeleton/dist/skeleton.css";
+import "react-circular-progressbar/dist/styles.css";
 import "./App.css";
 import AppBar from "./components/AppBar";
 import Home from "./pages/Home";

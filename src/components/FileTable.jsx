@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { FileIcon, defaultStyles } from "react-file-icon";
+import { CircularProgressbar } from "react-circular-progressbar";
+
 import FileTableFilter from "./FileTableFilter";
 
-const FileTable = ({ papers, selectedDept, selectedSem, downloadFile }) => {
+const FileTable = ({
+  papers,
+  selectedDept,
+  selectedSem,
+  downloadFile,
+  downloadProgress = 0,
+}) => {
   const [filterOptions, setFilterOptions] = useState({
     paper: "",
     fileType: "",
@@ -24,7 +32,20 @@ const FileTable = ({ papers, selectedDept, selectedSem, downloadFile }) => {
   return (
     <div className="card shadow p-3 mb-5 bg-white rounded">
       <div className="card-body">
-        <h4 className="card-title">E-Documents</h4>
+        <h4 className="row card-title">
+          <div className="col-2" style={{ height: 75 }}>
+            E-Documents
+          </div>
+          {downloadProgress > 0 && (
+            <div className="col-1" style={{ width: 75, height: 75 }}>
+              <CircularProgressbar
+                value={downloadProgress}
+                maxValue={100}
+                text={`${downloadProgress}%`}
+              />
+            </div>
+          )}
+        </h4>
         {!selectedDept || !selectedSem ? (
           <div className="alert alert-info" role="alert">
             Choose both department and semester to get documents
@@ -77,6 +98,7 @@ const FileTable = ({ papers, selectedDept, selectedSem, downloadFile }) => {
                                 <button
                                   className="btn btn-success"
                                   onClick={() => downloadFile(file)}
+                                  disabled={downloadProgress}
                                 >
                                   Download
                                 </button>

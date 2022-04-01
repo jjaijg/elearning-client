@@ -43,7 +43,7 @@ class PaperService {
         return response.data;
       });
   }
-  uplFile(id, file) {
+  uplFile(id, file, onUploadProgress) {
     console.log(id, formData);
     const formData = new FormData();
     formData.append("file", file);
@@ -51,6 +51,7 @@ class PaperService {
       method: "PUT",
       url: `${API_URL}/papers/${id}/upload`,
       data: formData,
+      onUploadProgress,
       headers: {
         // "Content-Type": "multipart/form-data",
         ...getAuthHeader(),
@@ -80,7 +81,7 @@ class PaperService {
         return response.data;
       });
   }
-  dwnFile(file) {
+  dwnFile(file, onDownloadProgress) {
     console.log(file.fileDest);
     return axios({
       method: "POST",
@@ -90,6 +91,7 @@ class PaperService {
         mime: file.fileMime,
       },
       responseType: "arraybuffer",
+      onDownloadProgress,
     }).then((response) => {
       return response;
     });

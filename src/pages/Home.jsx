@@ -17,6 +17,7 @@ const Home = () => {
 
   const [deptLoading, setDeptLoading] = useState(false);
   const [semLoading, setSemLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   // const [paperLoading, setPaperLoading] = useState(false);
 
   useEffect(() => {
@@ -87,27 +88,39 @@ const Home = () => {
     });
   };
 
-  // const saveFile = async (blob, name) => {
-  //   const a = document.createElement("a");
-  //   a.setAttribute("download", name);
-  //   a.href = URL.createObjectURL(blob);
-  //   console.log(a);
-  //   // a.addEventListener("click", (e) => {
-  //   //   setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
-  //   // });
-  //   a.click();
+  const onDownloadProgress = (progressEvent) => {
+    var percentCompleted = Math.round(
+      (progressEvent.loaded * 100) / progressEvent.total
+    );
+    setProgress(percentCompleted);
+  };
   // };
 
   const downloadFile = async (file) => {
     try {
-      const res = await paperService.dwnFile(file);
+      const res = await paperService.dwnFile(file, onDownloadProgress);
       const blob = new Blob([res.data], {
         type: res.headers["content-type"],
       });
       FileSaver.saveAs(blob, file.fileName);
+      setProgress(0);
     } catch (err) {
       console.log("err : ", err);
-      toast.error(err.response?.data.message || err.statusText);
+      console.log(
+        err.response?.data.message ||
+          err.response?.message ||
+          err.statusText ||
+          err.message
+      );
+      toast.error(
+        `Check if file exists, ${
+          err.response?.data.message ||
+          err.response?.message ||
+          err.statusText ||
+          err.message
+        }`
+      );
+      setProgress(0);
     }
   };
 
@@ -178,6 +191,7 @@ const Home = () => {
           downloadFile={downloadFile}
           selectedDept={selectedDept}
           selectedSem={selectedSem}
+          downloadProgress={progress}
         />
       )}
       <ToastContainer position="bottom-right" />

@@ -5,6 +5,7 @@ import { FileIcon, defaultStyles } from "react-file-icon";
 import { FileUploader } from "react-drag-drop-files";
 // import { getCssId } from "css-unique-id";
 import uniqid from "uniqid";
+import { CircularProgressbar } from "react-circular-progressbar";
 
 import PaperModal from "./PaperModal";
 import paperService from "../services/paper.service";
@@ -35,12 +36,14 @@ const PaperBoard = ({
     upl_file: null,
   });
   const [activeTab, setActiveTab] = useState("add-paper");
+  const [progress, setProgress] = useState(0);
 
   const canFileUpload =
     !uploadForm.upl_dept ||
     !uploadForm.upl_sem ||
     !uploadForm.upl_pap ||
-    !uploadForm.upl_file;
+    !uploadForm.upl_file ||
+    progress;
 
   const onAddChange = (e) => {
     const { name, value } = e.target;
@@ -113,6 +116,7 @@ const PaperBoard = ({
 
   const handleFileTypeError = (err) => {
     setUploadForm({ ...uploadForm, upl_file: null });
+    console.log(err);
     toast.error(`${err} - File type should be ${TYPES.join("/")}`);
   };
   const handleFileSizeError = (err) => {
@@ -120,18 +124,28 @@ const PaperBoard = ({
     toast.error(`${err} - should be less than ${MAX_SIZE} mb`);
   };
 
+  const onUploadProgress = (progressEvent) => {
+    var percentCompleted = Math.round(
+      (progressEvent.loaded * 100) / progressEvent.total
+    );
+    setProgress(percentCompleted);
+  };
+
   const onUpload = async () => {
     if (canFileUpload) return;
     try {
       const res = await paperService.uplFile(
         uploadForm.upl_pap,
-        uploadForm.upl_file
+        uploadForm.upl_file,
+        onUploadProgress
       );
       setProcessed(true);
       setUploadForm({ ...uploadForm, upl_file: null });
+      setProgress(0);
       toast.success(`${res.message}`);
     } catch (err) {
       console.log("err : ", err);
+      setProgress(0);
       toast.error(err.response?.data.message || err.statusText);
     }
   };
@@ -350,18 +364,32 @@ const PaperBoard = ({
                         </option>
                       ))}
                     </select>
-                    <div className="my-3">
-                      <FileUploader
-                        handleChange={getFile}
-                        onSelect={getFile}
-                        onDrop={getFile}
-                        onTypeError={handleFileTypeError}
-                        onSizeError={handleFileSizeError}
-                        name="file"
-                        types={TYPES}
-                        maxSize={MAX_SIZE}
-                        fileOrFiles={uploadForm.upl_file}
-                      />
+                    <div className="my-3 row">
+                      <div className="col-6">
+                        <FileUploader
+                          handleChange={getFile}
+                          onSelect={getFile}
+                          onDrop={getFile}
+                          onTypeError={handleFileTypeError}
+                          onSizeError={handleFileSizeError}
+                          name="file"
+                          types={TYPES}
+                          maxSize={MAX_SIZE}
+                          fileOrFiles={uploadForm.upl_file}
+                        />
+                      </div>
+                      {progress > 0 && (
+                        <div
+                          className="col-1"
+                          style={{ width: 75, height: 75 }}
+                        >
+                          <CircularProgressbar
+                            value={progress}
+                            maxValue={100}
+                            text={`${progress}%`}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="col-sm-12 col-8">
