@@ -65,7 +65,7 @@ const SemesterBoard = ({ departments, semesters, loading, setProcessed }) => {
         <div className="card-body">
           <h4 className="card-title">Semesters</h4>
           <div className="row my-3">
-            <div className="col-sm-12 col-8">
+            <div className="col-sm-12 col-7lg-8">
               <input
                 type="text"
                 className="form-control mb-3"
@@ -94,7 +94,7 @@ const SemesterBoard = ({ departments, semesters, loading, setProcessed }) => {
                 ))}
               </select>
             </div>
-            <div className="col-sm-12 col-8 ">
+            <div className="col-sm-12 col-lg-8 ">
               <button className="btn btn-success" onClick={onAdd}>
                 Add Semester
               </button>

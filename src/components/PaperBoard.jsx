@@ -225,7 +225,7 @@ const PaperBoard = ({
                 id="add-paper"
               >
                 <div className="row my-3">
-                  <div className="col-sm-12 col-8">
+                  <div className="col-sm-12 col-lg-8">
                     <select
                       className="form-select mb-3"
                       aria-label="Department list"
@@ -278,7 +278,7 @@ const PaperBoard = ({
                       required
                     />
                   </div>
-                  <div className="col-sm-12 col-8">
+                  <div className="col-sm-12 col-lg-8">
                     <button
                       className="btn btn-success"
                       onClick={onAdd}
@@ -300,7 +300,7 @@ const PaperBoard = ({
                 id="upload-file"
               >
                 <div className="row my-3">
-                  <div className="col-sm-12 col-8">
+                  <div className="col-sm-12 col-lg-8">
                     <select
                       className="form-select mb-3"
                       aria-label="Department list"
@@ -365,7 +365,7 @@ const PaperBoard = ({
                       ))}
                     </select>
                     <div className="my-3 row">
-                      <div className="col-6">
+                      <div className="col-sm-12 col-lg-6">
                         <FileUploader
                           handleChange={getFile}
                           onSelect={getFile}
@@ -380,7 +380,7 @@ const PaperBoard = ({
                       </div>
                       {progress > 0 && (
                         <div
-                          className="col-1"
+                          className="col-sm-4 col-lg-1"
                           style={{ width: 75, height: 75 }}
                         >
                           <CircularProgressbar
@@ -392,7 +392,7 @@ const PaperBoard = ({
                       )}
                     </div>
                   </div>
-                  <div className="col-sm-12 col-8">
+                  <div className="col-sm-12 col-lg-8">
                     <button
                       className="btn btn-success"
                       onClick={onUpload}

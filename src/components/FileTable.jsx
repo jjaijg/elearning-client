@@ -33,11 +33,9 @@ const FileTable = ({
     <div className="card shadow p-3 mb-5 bg-white rounded">
       <div className="card-body">
         <h4 className="row card-title">
-          <div className="col-2" style={{ height: 75 }}>
-            E-Documents
-          </div>
+          <div className="col-sm-4 col-lg-2">E-Documents</div>
           {downloadProgress > 0 && (
-            <div className="col-1" style={{ width: 75, height: 75 }}>
+            <div className="col-3 col-lg-1" style={{ width: 75, height: 75 }}>
               <CircularProgressbar
                 value={downloadProgress}
                 maxValue={100}
