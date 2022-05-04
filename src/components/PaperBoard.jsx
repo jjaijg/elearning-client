@@ -228,15 +228,15 @@ const PaperBoard = ({
                   <div className="col-sm-12 col-lg-8">
                     <select
                       className="form-select mb-3"
-                      aria-label="Department list"
-                      placeholder="Select department"
+                      aria-label="Course list"
+                      placeholder="Select course"
                       required
                       name="add_dept"
                       value={addForm.add_dept}
                       onChange={onAddChange}
                     >
                       <option value="" disabled>
-                        --Choose Department--
+                        --Choose Course--
                       </option>
                       {departments?.map((dept) => (
                         <option key={dept._id} value={dept._id}>
@@ -303,8 +303,8 @@ const PaperBoard = ({
                   <div className="col-sm-12 col-lg-8">
                     <select
                       className="form-select mb-3"
-                      aria-label="Department list"
-                      placeholder="Select department"
+                      aria-label="Course list"
+                      placeholder="Select course"
                       required
                       name="upl_dept"
                       value={uploadForm.upl_dept}
@@ -312,7 +312,7 @@ const PaperBoard = ({
                       disabled={!departments?.length}
                     >
                       <option disabled value={""}>
-                        Choose department
+                        Choose course
                       </option>
                       {departments?.map((dept) => (
                         <option key={dept._id} value={dept._id}>
@@ -415,7 +415,7 @@ const PaperBoard = ({
                   <th scope="col">#</th>
                   <th scope="col">Name</th>
                   <th scope="col">Semester</th>
-                  <th scope="col">Department</th>
+                  <th scope="col">Course</th>
                   <th scope="col"># files</th>
                   <th scope="col">Action</th>
                 </tr>

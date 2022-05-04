@@ -59,20 +59,20 @@ const DepartmentBoard = ({ departments, loading, setProcessed }) => {
     <>
       <div className="card">
         <div className="card-body">
-          <h4 className="card-title">Departments</h4>
+          <h4 className="card-title">Courses</h4>
           <div className="row my-3">
             <div className="col-8">
               <input
                 type="text"
                 className="form-control"
-                placeholder="Department name"
-                aria-label="Department name"
+                placeholder="Course name"
+                aria-label="Course name"
                 ref={deptRef}
               />
             </div>
             <div className="col-4">
               <button className="btn btn-success" onClick={onAdd}>
-                Add Department
+                Add Course
               </button>
             </div>
           </div>

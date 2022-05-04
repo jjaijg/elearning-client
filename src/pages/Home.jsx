@@ -128,20 +128,20 @@ const Home = () => {
     <div className="container">
       <div className="card mt-2 shadow p-3 mb-5 bg-white rounded">
         <div className="card-body">
-          <h4 className="card-title">Choose Department and Semester</h4>
+          <h4 className="card-title">Choose Course and Semester</h4>
           {deptLoading ? (
             <Skeleton />
           ) : (
             <div className="form-group my-3">
-              <label htmlFor="department-list">Department</label>
+              <label htmlFor="department-list">Course</label>
               <select
                 className="form-select mt-2"
                 id="department-list"
-                aria-label="Department list"
-                defaultValue={"--Select Department--"}
+                aria-label="Course list"
+                defaultValue={"--Select Course--"}
                 onChange={onDeptChange}
               >
-                <option disabled>--Select Department--</option>
+                <option disabled>--Select Course--</option>
                 {departments.map((dept) => (
                   <option value={dept._id} key={dept._id}>
                     {dept.name}
@@ -150,7 +150,7 @@ const Home = () => {
               </select>
               {!selectedDept && (
                 <small id="deptHelp" className="form-text text-muted">
-                  Choose your department
+                  Choose your course
                 </small>
               )}
             </div>

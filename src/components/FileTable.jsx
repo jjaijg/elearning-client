@@ -46,7 +46,7 @@ const FileTable = ({
         </h4>
         {!selectedDept || !selectedSem ? (
           <div className="alert alert-info" role="alert">
-            Choose both department and semester to get documents
+            Choose both course and semester to get documents
           </div>
         ) : (
           <div className="row">

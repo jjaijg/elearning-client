@@ -66,13 +66,13 @@ const SemesterModal = ({ semester, departments, submitHandler }) => {
               </div>
               <div className="mb-3">
                 <label htmlFor="department" className="form-label">
-                  Department
+                  Course
                 </label>
                 <select
                   type="text"
                   className="form-select"
                   id="department"
-                  placeholder="Department"
+                  placeholder="course"
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
                 >

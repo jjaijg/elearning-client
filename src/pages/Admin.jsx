@@ -93,7 +93,7 @@ const Admin = ({ adminOption, setAdminOption }) => {
             } nav-link`}
             type="button"
           >
-            Departments
+            Courses
           </span>
         </li>
         <li className="nav-item" onClick={() => setAdminOption("semesters")}>

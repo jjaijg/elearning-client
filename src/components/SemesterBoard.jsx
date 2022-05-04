@@ -76,16 +76,16 @@ const SemesterBoard = ({ departments, semesters, loading, setProcessed }) => {
               />
               <select
                 className="form-select mb-3"
-                aria-label="Department list"
-                placeholder="Select department"
+                aria-label="Course list"
+                placeholder="Select course"
                 required
                 ref={deptRef}
                 defaultValue={""}
               >
                 <option value="" disabled>
                   {!departments.length
-                    ? "No department found"
-                    : "--Choose department--"}
+                    ? "No course found"
+                    : "--Choose course--"}
                 </option>
                 {departments?.map((dept) => (
                   <option key={dept._id} value={dept._id}>
@@ -113,7 +113,7 @@ const SemesterBoard = ({ departments, semesters, loading, setProcessed }) => {
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">Name</th>
-                  <th scope="col">Department</th>
+                  <th scope="col">Course</th>
                   <th scope="col"># Paper</th>
                   <th scope="col">Action</th>
                 </tr>

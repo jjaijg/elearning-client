@@ -23,7 +23,7 @@ const DepartmentModal = ({ department, submitHandler }) => {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="department-modal-label">
-              Edit Department
+              Edit Course
             </h5>
             <button
               type="button"
@@ -36,26 +36,26 @@ const DepartmentModal = ({ department, submitHandler }) => {
             <form>
               <div className="mb-3">
                 <label htmlFor="_id" className="form-label">
-                  Department Id
+                  Course Id
                 </label>
                 <input
                   type="text"
                   className="form-control"
                   id="_id"
-                  placeholder="Department Id"
+                  placeholder="Course Id"
                   defaultValue={department?._id}
                   disabled
                 />
               </div>
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">
-                  Department name
+                  Course name
                 </label>
                 <input
                   type="text"
                   className="form-control"
                   id="name"
-                  placeholder="Department name"
+                  placeholder="Course name"
                   value={deptName}
                   onChange={(e) => setDeptName(e.target.value)}
                 />
